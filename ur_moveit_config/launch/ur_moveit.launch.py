@@ -72,7 +72,7 @@ def launch_setup(context, *args, **kwargs):
         [FindPackageShare(description_package), "config", ur_type, "joint_limits.yaml"]
     )
     kinematics_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "default_kinematics.yaml"]
+        [FindPackageShare("ur_moveit_config"), "config", "ur10e_iaac_calibration.yaml"]
     )
     physical_params = PathJoinSubstitution(
         [FindPackageShare(description_package), "config", ur_type, "physical_parameters.yaml"]
@@ -134,9 +134,7 @@ def launch_setup(context, *args, **kwargs):
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution(
-                [FindPackageShare(moveit_config_package), "srdf", moveit_config_file]
-            ),
+            PathJoinSubstitution([FindPackageShare(moveit_config_package), "srdf", moveit_config_file]),
             " ",
             "name:=",
             # Also ur_type parameter could be used but then the planning group names in yaml
@@ -150,9 +148,7 @@ def launch_setup(context, *args, **kwargs):
     )
     robot_description_semantic = {"robot_description_semantic": robot_description_semantic_content}
 
-    publish_robot_description_semantic = {
-        "publish_robot_description_semantic": _publish_robot_description_semantic
-    }
+    publish_robot_description_semantic = {"publish_robot_description_semantic": _publish_robot_description_semantic}
 
     robot_description_kinematics = PathJoinSubstitution(
         [FindPackageShare(moveit_config_package), "config", "kinematics.yaml"]
@@ -179,9 +175,7 @@ def launch_setup(context, *args, **kwargs):
     # Trajectory Execution Configuration
     controllers_yaml = load_yaml("ur_moveit_config", "config/controllers.yaml")
     # the scaled_joint_trajectory_controller does not work on fake hardware
-    change_controllers = context.perform_substitution(
-        OrSubstitution(use_fake_hardware, use_sim_time)
-    )
+    change_controllers = context.perform_substitution(OrSubstitution(use_fake_hardware, use_sim_time))
     if change_controllers == "true":
         controllers_yaml["scaled_joint_trajectory_controller"]["default"] = False
         controllers_yaml["joint_trajectory_controller"]["default"] = True
@@ -233,9 +227,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # rviz with moveit configuration
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(moveit_config_package), "rviz", "view_robot.rviz"]
-    )
+    rviz_config_file = PathJoinSubstitution([FindPackageShare(moveit_config_package), "rviz", "view_robot.rviz"])
     rviz_node = Node(
         package="rviz2",
         condition=IfCondition(launch_rviz),
@@ -383,11 +375,7 @@ def generate_launch_description():
             "have to be updated.",
         )
     )
-    declared_arguments.append(
-        DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?")
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument("launch_servo", default_value="true", description="Launch Servo?")
-    )
+    declared_arguments.append(DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"))
+    declared_arguments.append(DeclareLaunchArgument("launch_servo", default_value="true", description="Launch Servo?"))
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
