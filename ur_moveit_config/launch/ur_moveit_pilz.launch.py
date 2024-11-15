@@ -212,7 +212,7 @@ def launch_setup(context, *args, **kwargs):
         parameters=[
             robot_description,
             robot_description_semantic,
-            # publish_robot_description_semantic,
+            publish_robot_description_semantic,
             robot_description_kinematics,
             robot_description_planning,
             pilz_planning_pipeline_config,
