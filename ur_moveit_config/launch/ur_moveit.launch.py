@@ -163,16 +163,51 @@ def launch_setup(context, *args, **kwargs):
         )
     }
 
-    # Planning Configuration
-    ompl_planning_pipeline_config = {
-        "move_group": {
+    planning_pipelines_config = {
+        "planning_pipelines": ["ompl", "pilz_industrial_motion_planner"],
+        "default_planning_pipeline": "ompl",
+        "move_group": {},
+        "pilz_industrial_motion_planner": {},
+        "ompl": {
             "planning_plugin": "ompl_interface/OMPLPlanner",
             "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
             "start_state_max_bounds_error": 0.1,
-        }
+        },
+        "robot_description_planning": {},
+        # "move_group": {
+        #     "planning_pipelines": ["ompl", "pilz_industrial_motion_planner"],
+        #     "default_planning_pipeline": "ompl",
+        #     "planning_plugin": "ompl_interface/OMPLPlanner",
+        #     "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+        #     "start_state_max_bounds_error": 0.1,
+        # },
     }
+
     ompl_planning_yaml = load_yaml("ur_moveit_config", "config/ompl_planning.yaml")
-    ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
+    planning_pipelines_config["ompl"].update(ompl_planning_yaml)
+
+    pilz_planning_yaml = load_yaml(
+        "ur_moveit_config", "config/pilz_industrial_motion_planner_planning.yaml"
+    )
+    planning_pipelines_config["pilz_industrial_motion_planner"].update(pilz_planning_yaml)
+
+    pilz_cartesian_limits_yaml = load_yaml("ur_moveit_config", "config/pilz_cartesian_limits.yaml")
+    planning_pipelines_config["robot_description_planning"] = pilz_cartesian_limits_yaml
+
+    move_group_capabilities = {
+        "capabilities": "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
+    }
+
+    # # Planning Configuration
+    # ompl_planning_pipeline_config = {
+    #     "move_group": {
+    #         "planning_plugin": "ompl_interface/OMPLPlanner",
+    #         "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+    #         "start_state_max_bounds_error": 0.1,
+    #     }
+    # }
+    # ompl_planning_yaml = load_yaml("ur_moveit_config", "config/ompl_planning.yaml")
+    # ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     # Trajectory Execution Configuration
     controllers_yaml = load_yaml("ur_moveit_config", "config/controllers.yaml")
@@ -219,12 +254,13 @@ def launch_setup(context, *args, **kwargs):
             publish_robot_description_semantic,
             robot_description_kinematics,
             robot_description_planning,
-            ompl_planning_pipeline_config,
+            planning_pipelines_config,
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
             {"use_sim_time": use_sim_time},
             warehouse_ros_config,
+            move_group_capabilities,
         ],
     )
 
@@ -242,7 +278,7 @@ def launch_setup(context, *args, **kwargs):
         parameters=[
             robot_description,
             robot_description_semantic,
-            ompl_planning_pipeline_config,
+            planning_pipelines_config,
             robot_description_kinematics,
             robot_description_planning,
             warehouse_ros_config,
