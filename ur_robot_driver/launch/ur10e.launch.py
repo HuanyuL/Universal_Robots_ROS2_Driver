@@ -81,6 +81,20 @@ def generate_launch_description():
             description="Activate loaded joint controller.",
         )
     )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "description_package",
+            default_value="ur_description",
+            description="Package containing the URDF description of the robot.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "description_file",
+            default_value="ur.urdf.xacro",
+            description="URDF description file of the robot.",
+        )
+    )
 
     # Initialize Arguments
     robot_ip = LaunchConfiguration("robot_ip")
@@ -88,6 +102,8 @@ def generate_launch_description():
     fake_sensor_commands = LaunchConfiguration("fake_sensor_commands")
     initial_joint_controller = LaunchConfiguration("initial_joint_controller")
     activate_joint_controller = LaunchConfiguration("activate_joint_controller")
+    description_package = LaunchConfiguration("description_package")
+    description_file = LaunchConfiguration("description_file")
 
     base_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([ThisLaunchFileDir(), "/ur_control.launch.py"]),
@@ -98,6 +114,8 @@ def generate_launch_description():
             "fake_sensor_commands": fake_sensor_commands,
             "initial_joint_controller": initial_joint_controller,
             "activate_joint_controller": activate_joint_controller,
+            "description_package": description_package,
+            "description_file": description_file,
         }.items(),
     )
 
