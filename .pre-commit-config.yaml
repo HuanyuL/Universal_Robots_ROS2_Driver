@@ -15,7 +15,7 @@
 repos:
   # Standard hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -33,13 +33,13 @@ repos:
 
   # Python hooks
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.20.0
+    rev: v3.21.2
     hooks:
     -   id: pyupgrade
         args: [--py36-plus]
 
   - repo: https://github.com/psf/black
-    rev: 25.1.0
+    rev: 26.5.1
     hooks:
       - id: black
         args: ["--line-length=100"]
@@ -87,7 +87,7 @@ repos:
         args: ["--linelength=120"]
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: 'v20.1.7'
+    rev: 'v23.1.0'
     hooks:
       - id: clang-format
 
@@ -130,7 +130,7 @@ repos:
   # Spellcheck in comments and docs
   # skipping of *.svg files is not working...
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.3
     hooks:
       - id: codespell
         args: ['--write-changes', '-L bootup,assertIn']
